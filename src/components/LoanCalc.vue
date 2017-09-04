@@ -92,7 +92,7 @@ export default {
   mounted() {
     this.hideResults();
     const ctx = document.getElementById('loan_pie');
-    loanPieChart = new Chart(ctx, {
+    this.loanPieChart = new Chart(ctx, {
       type: 'pie',
       data: {},
       options: {
