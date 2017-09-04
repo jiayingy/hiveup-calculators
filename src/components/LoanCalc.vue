@@ -7,7 +7,7 @@
         My loan term is <input type="number" min="0" v-model="loanTerm"> <br>
         The annual interest rate is <input type="number" min="0" max="100" v-model="annualInterest">%.
       </p>
-      <input type="submit" value="Calculate" v-on:click="showResults">
+      <input type="submit" value="Calculate" v-on:click="getResults()">
     </div>
     <div id="results">
       <h1>Know your loan payments</h1>
@@ -18,18 +18,20 @@
       <table>
         <tr>
           <td>Total Interest paid (S$)</td>
-          <td>{{loanPayment * loanTerm * 12 - loanAmt}}</td>
+          <td>{{getTotalInterest}}</td>
         </tr>
         <tr>
           <td>Principal</td>
           <td>{{loanAmt}}</td>
         </tr>
       </table>
+      <canvas id="loan_pie" width="400" height="400"></canvas>
     </div>
   </div>
 </template>
 
 <script>
+import Chart from 'chart.js';
 import calcResults from './calcResults';
 
 export default {
@@ -41,6 +43,7 @@ export default {
       annualInterest: '',
       loanPayment: '',
       loanTerm: '',
+      loanPieChart: '',
     };
   },
   computed: {
@@ -53,15 +56,55 @@ export default {
       this.loanPayment = this.calcPMT(PV, APR, R, n);
       return this.loanPayment;
     },
+    getTotalInterest() {
+      return (this.loanPayment * this.loanTerm * 12) - this.loanAmt;
+    },
+  },
+  methods: {
+    getResults() {
+      if (this.checkInputs()) {
+        this.showResults();
+        this.drawChart();
+      }
+    },
+    drawChart() {
+      /* eslint-disable no-unused-vars */
+      // const loanPieChart = new Chart(ctx, {
+      //   type: 'pie',
+      //   data: {
+      //     labels: ['Total Interest Paid', 'Principal'],
+      //     datasets: [{
+      //       label: 'test',
+      //       data: [this.getTotalInterest, this.loanAmt],
+      //       backgroundColor: [
+      //         'green',
+      //         'darkorange',
+      //       ],
+      //       borderWidth: 3,
+      //     }],
+      //   },
+      //   options: {
+      //     responsive: false,
+      //   },
+      // });
+    },
   },
   mounted() {
     this.hideResults();
+    const ctx = document.getElementById('loan_pie');
+    loanPieChart = new Chart(ctx, {
+      type: 'pie',
+      data: {},
+      options: {
+        responsive: false,
+      },
+    });
   },
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style lang="scss" scoped>
 h1, h2 {
   font-weight: normal;
 }
